@@ -1,6 +1,20 @@
 #!/bin/bash
-
+set -x
 set -euo pipefail
+
+menu=""
+
+while getopts hm: FLAG; do
+
+	case "$FLAG" in
+	m)
+		menu="$OPTARG"
+		;;
+	*) 
+		echo "Invalid flag: $FLAG"
+		;;
+	esac
+done
 
 FILE="$(find "$HOME/.mozilla/firefox" -name recovery.jsonlz4)"
 ISSUE_RE="[A-Z]{3}-[0-9]+"
@@ -20,8 +34,12 @@ for win in jdata["windows"]:
 
 ISSUE_KEYS_ALL="$(echo "$ISSUE_KEYS_FIREFOX" | sort -u)"
 
-CHOICE="$(echo "$ISSUE_KEYS_ALL" | rofi -l 16 -dmenu -p "Jira issue fetcher")"
+CHOICE=""
+if [ "$menu" = "rofi" ] ; then
+	CHOICE="$(echo "$ISSUE_KEYS_ALL" | rofi -l 16 -dmenu -p "Jira issue fetcher")"
+elif [ "$menu" = "wofi" ] ; then
+	CHOICE="$(echo "$ISSUE_KEYS_ALL" | wofi -L 16 -S dmenu -p "Jira issue fetcher" --style=/home/winkler/.config/wofi/theme.css)"
+fi
 
 ISSUE_KEY="$(grep -oE "$ISSUE_RE" <<<"$CHOICE")"
-setxkbmap -layout ch -variant de_nodeadkeys -model pc103
-xdotool type "$ISSUE_KEY"
+dotool type "$ISSUE_KEY"

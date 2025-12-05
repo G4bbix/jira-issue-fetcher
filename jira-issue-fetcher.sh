@@ -41,4 +41,4 @@ elif [ "$menu" = "wofi" ] ; then
 fi
 
 ISSUE_KEY="$(grep -oE "$ISSUE_RE" <<<"$CHOICE")"
-dotool type "$ISSUE_KEY"
+echo "type $ISSUE_KEY" | DOTOOL_XKB_LAYOUT=de dotool
